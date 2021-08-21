@@ -6,6 +6,11 @@ https://prismjs.com/download.html#themes=prism-tomorrow&languages=clike+c+java+p
  * @author Rose Pritchard
  */
 
+.doNotHighlight{
+    color: #ccc !important;
+}
+
+
 code[class*="language-"],
 pre[class*="language-"] {
 	color: #ccc;

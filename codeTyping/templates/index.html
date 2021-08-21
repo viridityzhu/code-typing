@@ -44,12 +44,72 @@
                 <button type='submit' name="typeName" value="{{typeName}}">Select</button>
             </form>
 
+            <h4 id="typingStatus">Press Space to start.</h4>
 
             <pre><code class="lang-{{language}}">{% for i in sentences%}{{i}}{% endfor %}
 </code></pre>
+        </div>
+
+        <div id="hiddenDiv">
+            <input type="text" name="hiddenInput" id="hiddenInput">            
         </div>
 
     </body>
 
 
 </html>
+
+<!-- <script type="text/javascript">
+    window.Prism = window.Prism || {};
+    Prism.manual = true;
+    // add a new <script> to load Prism's script
+    // Prism.highlightAllUnder(document);
+</script> -->
+<script type="text/javascript">
+    function unescape(string) {
+      return new DOMParser().parseFromString(string,'text/html').querySelector('html').textContent;
+    }
+    letters = unescape("{{letters}}");
+    nowLen = 0;
+    
+    start = function(e){
+        if(e.code == 'Space') {
+            document.getElementById('typingStatus').innerHTML = 'Status: Start';
+            document.getElementById('typingStatus').style.color = 'green';
+            document.getElementById("hiddenInput").focus();
+            document.removeEventListener("keypress",start);
+        }
+    };
+    pause = function(e) {
+        document.getElementById('typingStatus').innerHTML = 'Status: Pause. Press Space to start.';
+        document.getElementById('typingStatus').style.color = 'red';
+        document.addEventListener("keypress",start);
+    };
+    judge = function judge(e) {
+        nowLen = e.target.value.length;
+        rightAns = letters.slice(0, nowLen);
+        nowAns = e.target.value;
+        ifRight = (nowAns == rightAns);
+        console.log('right ans: '+rightAns+
+            '\nEntered: '+nowAns+
+            '\nRight? '+ ifRight);
+        if(ifRight) {
+            codeElms = document.getElementsByClassName("token");
+            // alert( codeElms);
+
+            for (var i = 0, highlightedLen = 0; i<nowLen && highlightedLen < nowLen; i++) {
+                // console.log(i,codeElms[i]);
+                highlightedLen += codeElms[i].innerHTML.length;
+                if(highlightedLen <= nowLen){
+                    codeElms[i].classList.remove("doNotHighlight");
+                }
+                console.log(highlightedLen,nowLen);
+            };
+        };
+    };
+    document.addEventListener("keypress",start);
+    document.getElementById("hiddenInput").addEventListener("input",judge);
+    document.getElementById("hiddenInput").addEventListener("focusout",pause);
+
+
+</script>

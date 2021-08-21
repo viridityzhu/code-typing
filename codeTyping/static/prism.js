@@ -816,7 +816,7 @@ var Prism = (function (_self) {
 			type: o.type,
 			content: stringify(o.content, language),
 			tag: 'span',
-			classes: ['token', o.type],
+			classes: ['token', o.type,'doNotHighlight'],
 			attributes: {},
 			language: language
 		};

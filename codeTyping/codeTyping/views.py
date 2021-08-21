@@ -28,6 +28,8 @@ def mainView(request):
             folderName = materialTypes[request.GET['typeName']]
             content['language'] = folderName.split('_')[0]
             with open('static/typingMaterials/' + folderName + '/' + request.GET['material']) as f:
-                content['sentences'] = f.readlines()
-            # pass
+                lines = f.readlines()
+                content['sentences'] = lines
+                content['letters'] = '\\\n'.join(
+                    line.strip('\n') for line in lines)
     return render(request, "templates/index.html", content)

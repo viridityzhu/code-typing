@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Code Typing Practice</title>
+       
+        {% load staticfiles %}
+        <link rel="stylesheet" type="text/css" href="{% static "m.css" %}">
+        <!-- prism -->
+        <link rel="stylesheet" type="text/css" href="{% static "prism.css" %}">
+        <script type="text/javascript" src="{% static "prism.js" %}"></script>
+
+    </head>
+    <body class="darkMode">
+        <div id="heading">
+            <h1>Code Typing Practice</h1>
+            <h2>This is a web page for me to practice English typing, especially code typing. I am going to choose some of my program files as the typing practice materials, and practice type here.</h2>
+            <h3>I'm also missing one of the games of 金山打字通, in which a cop is always chasing a thief.</h3>
+        </div>
+
+        <div id="func">
+            <form method="get" name="chooseTypingMaterial">
+                <div id="choose">
+                    <p>Choose Typing Materials:</p>
+                    <input type="text" name="choose" list="materialTypeList">
+                    <datalist id="materialTypeList">
+                        <option>C codes</option>
+                        <option>Java codes</option>
+                        <option>Python codes</option>
+                        <option>English Articles</option>
+                        <option>Randomly Mixed</option>
+                    </datalist>
+                    <button type="submit">Start</button>
+                </div>
+            </form>
+
+            <form method="get" name="materialLst">
+                <p>Choose Materials from List:</p>
+                <input type="text" name="material" list="materialList">
+                <datalist id="materialList">
+                   {% for i in materials %}
+                        <option>{{i}}</option>
+                    {% endfor %} 
+                </datalist>
+                <button type='submit' name="typeName" value="{{typeName}}">Select</button>
+            </form>
+
+
+            <pre><code class="lang-{{language}}">{% for i in sentences%}{{i}}{% endfor %}
+</code></pre>
+        </div>
+
+    </body>
+
+
+</html>

@@ -10,4 +10,19 @@
 #hiddenDiv{
     width: 0;
     overflow: hidden;
+    position: fixed;
+    top: 0px;
+}
+#arrow{
+    width: 10px;
+    position: absolute;
+    height: 5px;
+    background: rgb(50,200,180);
+    /*left: 200px;*/
+}
+.errArrow{
+    background: red;
+    width: 10px;
+    position: absolute;
+    height: 5px;
 }

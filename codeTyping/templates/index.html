@@ -3,7 +3,7 @@
     <head>
         <title>Code Typing Practice</title>
        
-        {% load staticfiles %}
+        {% load static %}
         <link rel="stylesheet" type="text/css" href="{% static "m.css" %}">
         <!-- prism -->
         <link rel="stylesheet" type="text/css" href="{% static "prism.css" %}">
@@ -13,8 +13,7 @@
     <body class="darkMode">
         <div id="heading">
             <h1>Code Typing Practice</h1>
-            <h2>This is a web page for me to practice English typing, especially code typing. I am going to choose some of my program files as the typing practice materials, and practice type here.</h2>
-            <h3>I'm also missing one of the games of 金山打字通, in which a cop is always chasing a thief.</h3>
+            <h4>Though so many bugs, still try to practice code typing here:)</h4>
         </div>
 
         <div id="func">
@@ -53,6 +52,7 @@
         <div id="hiddenDiv">
             <input type="text" name="hiddenInput" id="hiddenInput">            
         </div>
+        <div id = "arrow"></div>
 
     </body>
 
@@ -67,48 +67,141 @@
 </script> -->
 <script type="text/javascript">
     function unescape(string) {
-      return new DOMParser().parseFromString(string,'text/html').querySelector('html').textContent;
+        // This is for convert the &#nn; signs to normal signs like "'"
+        return new DOMParser().parseFromString(string,'text/html').querySelector('html').textContent;
     }
     letters = unescape("{{letters}}");
     nowLen = 0;
+    isAfterStart = false; // is after start
+    codeElms = document.getElementsByTagName('code')[0].children;
+    currentElmNum = 0;
+    errs = [];
+    var eHiddenInput = document.getElementById("hiddenInput");
     
-    start = function(e){
+    var start = function(e){
         if(e.code == 'Space') {
             document.getElementById('typingStatus').innerHTML = 'Status: Start';
             document.getElementById('typingStatus').style.color = 'green';
-            document.getElementById("hiddenInput").focus();
+            var eHiddenInput = document.getElementById("hiddenInput");
+            eHiddenInput.focus();
+            isAfterStart = true;
             document.removeEventListener("keypress",start);
         }
     };
-    pause = function(e) {
+    var pause = function(e) {
         document.getElementById('typingStatus').innerHTML = 'Status: Pause. Press Space to start.';
         document.getElementById('typingStatus').style.color = 'red';
         document.addEventListener("keypress",start);
     };
-    judge = function judge(e) {
-        nowLen = e.target.value.length;
-        rightAns = letters.slice(0, nowLen);
-        nowAns = e.target.value;
-        ifRight = (nowAns == rightAns);
-        console.log('right ans: '+rightAns+
-            '\nEntered: '+nowAns+
-            '\nRight? '+ ifRight);
-        if(ifRight) {
-            codeElms = document.getElementsByClassName("token");
-            // alert( codeElms);
+    var afterStart = function(e) {
+        // after start, there'll be a space inputted to the ans, so delete this space.
+        if(isAfterStart) {
+            
+            eHiddenInput.value = eHiddenInput.value.slice(0,eHiddenInput.value.length-1);
+            // console.log('slice::: ', eHiddenInput.value);
+            isAfterStart = false;
+        }
+    }
+    var judge = function judge(e) {
+        var curElm = codeElms[currentElmNum];
+        var curStr = curElm.textContent;
+        
+        var inputStr = e.target.value;
+        var inputLen = inputStr.length;
+        var isRight = true;
+        
+        console.log('inputStr: '+inputStr+
+            '\ncurStr '+ curStr);
 
-            for (var i = 0, highlightedLen = 0; i<nowLen && highlightedLen < nowLen; i++) {
-                // console.log(i,codeElms[i]);
-                highlightedLen += codeElms[i].innerHTML.length;
-                if(highlightedLen <= nowLen){
-                    codeElms[i].classList.remove("doNotHighlight");
-                }
-                console.log(highlightedLen,nowLen);
-            };
-        };
+        // arrow position depends on curElm.left and inputLen/curStr.length
+        moveArrow(curElm, inputLen, curStr.length);
+
+        for(var curLen = 0; curLen < inputLen; curLen ++){
+            if(inputStr[curLen] != curStr[curLen]) {
+                // error posion depends on curElm and curLen
+                errs += createErrArrow(curElm, curLen, curStr.length);
+                isRight = false;
+            }
+            else if (curLen == inputLen){
+                isRight = true;
+                deleteErrArrow(errs[errs.length - 1]);
+            }
+        }
+
+        if((inputLen >= curStr.length) && isRight) {
+            // highlight current element
+            curElm.classList.remove("doNotHighlight");
+            // move to next element
+            curElm = codeElms[++currentElmNum];
+            // refresh input
+            eHiddenInput.value = '';
+        }
+
+        // This is a \n or tab
+        while(curElm.classList.contains('lf') || curElm.classList.contains('tab')){
+            console.log('lf or tab.');
+            curElm = codeElms[++currentElmNum];
+            moveArrow(curElm, 0, 1);
+        }
+         
+
+        // // judge inputs and right answers
+        // inputLen = e.target.value.length;
+        // rightStr = letters.slice(0, inputLen);
+        // inputStr = e.target.value;
+        // isRight = (inputStr == rightStr);
+        // console.log('right ans: '+rightStr+
+        //     '\nEntered: '+inputStr+
+        //     '\nRight? '+ isRight);
+        // if(isRight) {
+        //     // if ans right, then highlight codes
+            
+        //     // collection of elements inside <code> tag
+
+        //     for (var elmI = 0, toHighlightLen = 0; toHighlightLen < inputLen; elmI++) {
+        //         // for every element item inside code, judge and highlight is
+        //         console.log(elmI,codeElms[elmI]);
+        //         rect = codeElms[elmI].getBoundingClientRect();
+        //         console.log("rect.left: ",rect.left);
+        //         document.getElementById("arrow").style.left = rect.left + 'px';
+        //         document.getElementById("arrow").style.top = rect.bottom + 'px';
+
+        //         if(codeElms[elmI].classList.contains('lf')) {
+        //             // This is a \n, TODO: arrow goes to next line
+        //             console.log("lf.");
+        //             continue;
+        //         }
+        //         toHighlightLen += codeElms[elmI].textContent.length;
+        //         if(inputLen >= toHighlightLen){
+        //             // now len reaches the length of elmI, then we can highlight the elmI, by remove the "doNotHighlight" class
+        //             codeElms[elmI].classList.remove("doNotHighlight");
+        //         }
+        //         console.log(codeElms[elmI].textContent,toHighlightLen,inputLen);
+        //     };
+        // };
+    };
+    var moveArrow = function moveArrow(elm, inputLen, totalLen, arrowDiv = undefined) {
+        var rect = elm.getBoundingClientRect();
+        if (arrowDiv == undefined){
+            arrowDiv = document.getElementById('arrow');
+        }
+        arrowDiv.style.left = rect.left + (rect.right - rect.left) * (inputLen / totalLen) + 'px';
+        arrowDiv.style.top = rect.bottom + 'px';
+        return arrowDiv.style.left
+    };
+    var createErrArrow = function createErrArrow(elm, inputLen, totalLen){
+        var errArr = document.createElement('div');
+        errArr.classList += 'errArrow';
+        arrLeft = moveArrow(elm, inputLen, totalLen, errArr);
+        document.getElementsByTagName('body')[0].appendChild(errArr);
+        return errArr;
+    };
+    var deleteErrArrow = function deleteErrArrow(errArr){
+        errArr.parentNode.removeChild(errArr);
     };
     document.addEventListener("keypress",start);
-    document.getElementById("hiddenInput").addEventListener("input",judge);
+    document.getElementById("hiddenInput").addEventListener("input",afterStart);
+    document.getElementById("hiddenInput").addEventListener("keyup",judge);
     document.getElementById("hiddenInput").addEventListener("focusout",pause);
 
 

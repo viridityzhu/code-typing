@@ -802,7 +802,8 @@ var Prism = (function (_self) {
 	 */
 	Token.stringify = function stringify(o, language) {
 		if (typeof o == 'string') {
-			return o;
+			// return o;
+			return '<span>'+o+'</span>';
 		}
 		if (Array.isArray(o)) {
 			var s = '';

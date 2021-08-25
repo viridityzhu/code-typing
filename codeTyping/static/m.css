@@ -1,3 +1,23 @@
+#heading{
+    text-align: center;
+}
+#func{
+    text-align: center;
+}
+
+#choose div{
+    padding: 20px;
+    width: 300px;
+}
+#chooseMaterial{
+    display: none;
+}
+div{
+    margin: 0 auto;
+}
+pre[class*="language-"]{
+    margin-left: 25%;
+}
 .darkMode{
     color: #ccc;
     background: #2d2d2d;
@@ -16,13 +36,13 @@
 #arrow{
     width: 10px;
     position: absolute;
-    height: 5px;
+    height: 8px;
     background: rgb(50,200,180);
     /*left: 200px;*/
 }
 .errArrow{
-    background: red;
+    background: #f57242;
     width: 10px;
     position: absolute;
-    height: 5px;
+    height: 22px;
 }

@@ -13,40 +13,47 @@
     <body class="darkMode">
         <div id="heading">
             <h1>Code Typing Practice</h1>
-            <h4>Though so many bugs, still try to practice code typing here:)</h4>
+            <h3><pre>Practice code typing here:)   |   Author: Zhu Jiayin <a href="https://github.com/viridityzhu">[Github]</a></pre></h3>
         </div>
 
         <div id="func">
-            <form method="get" name="chooseTypingMaterial">
-                <div id="choose">
-                    <p>Choose Typing Materials:</p>
-                    <input type="text" name="choose" list="materialTypeList">
-                    <datalist id="materialTypeList">
-                        <option>C codes</option>
-                        <option>Java codes</option>
-                        <option>Python codes</option>
-                        <option>English Articles</option>
-                        <option>Randomly Mixed</option>
-                    </datalist>
-                    <button type="submit">Start</button>
-                </div>
-            </form>
+            <div id="choose">
+                <form method="get" name="chooseTypingMaterial">
+                    <div id="chooseType" style="display:{{display1}}">
+                        <p>Choose Code Language:</p>
+                        <input type="text" name="choose" list="materialTypeList">
+                        <datalist id="materialTypeList">
+                            <option>C codes</option>
+                            <option>Java codes</option>
+                            <option>Python codes</option>
+                            <!-- <option>English Articles</option> -->
+                            <!-- <option>Randomly Mixed</option> -->
+                        </datalist>
+                        <button type="submit">Start</button>
+                    </div>
+                </form>
 
-            <form method="get" name="materialLst">
-                <p>Choose Materials from List:</p>
-                <input type="text" name="material" list="materialList">
-                <datalist id="materialList">
-                   {% for i in materials %}
-                        <option>{{i}}</option>
-                    {% endfor %} 
-                </datalist>
-                <button type='submit' name="typeName" value="{{typeName}}">Select</button>
-            </form>
+                <form method="get" name="materialLst" id="materialLst">
+                    <div id="chooseMaterial" style="display:{{display2}}">
+                        <p>Choose Materials from List:</p>
+                        <input type="text" name="material" id='materialInput' list="materialList">
+                        <datalist id="materialList">
+                           {% for i in materials %}
+                                <option>{{i}}</option>
+                            {% endfor %} 
+                        </datalist>
+                        <button type='submit' name="typeName" value="{{typeName}}" id='typeNameButton'>Select</button>
+                    </div>
+                </form>
+            </div>
 
             <h4 id="typingStatus">Press Space to start.</h4>
+            <h5>Use the right arrow key to skip code blocks.</h5>
 
-            <pre><code class="lang-{{language}}">{% for i in sentences%}{{i}}{% endfor %}
+            <div id="codeDiv">
+                <pre><code class="lang-{{language}}">{% for i in sentences%}{{i}}{% endfor %}
 </code></pre>
+            </div>
         </div>
 
         <div id="hiddenDiv">
@@ -75,7 +82,7 @@
     isAfterStart = false; // is after start
     codeElms = document.getElementsByTagName('code')[0].children;
     currentElmNum = 0;
-    errs = [];
+    curElm = codeElms[0];
     var eHiddenInput = document.getElementById("hiddenInput");
     
     var start = function(e){
@@ -102,9 +109,28 @@
             isAfterStart = false;
         }
     }
+    var submitMaterialChoice = function submitMaterialChoice(){
+        // material=hannuota.py&typeName=Python+codes
+        var material = "*random";
+        var typeName = '{{language}} codes';
+        var form = document.getElementById('materialLst');
+        var materialInput = document.getElementById('materialInput');
+        var typeNameButton = document.getElementById('typeNameButton');
+
+        materialInput.value = material;
+        typeNameButton.value = typeName;
+        typeNameButton.click();
+
+    }
     var judge = function judge(e) {
-        var curElm = codeElms[currentElmNum];
-        var curStr = curElm.textContent;
+        curElm = codeElms[currentElmNum];
+        try{
+            var curStr = curElm.textContent;
+        }
+        catch(e){
+            // finish one material, move on to another one
+            submitMaterialChoice();
+        }
         
         var inputStr = e.target.value;
         var inputLen = inputStr.length;
@@ -113,18 +139,43 @@
         console.log('inputStr: '+inputStr+
             '\ncurStr '+ curStr);
 
+
+        if (e.code == 'ArrowRight'){
+            // skip this code element
+            console.log(e.code);
+
+            // highlight current element
+            curElm.classList.remove("doNotHighlight");
+            // move to next element
+            curElm = codeElms[++currentElmNum];
+            // refresh input
+            eHiddenInput.value = '';
+            
+
+            // This is a \n or tab
+            while(curElm.classList.contains('lf') || curElm.classList.contains('tab')){
+                console.log('lf or tab.');
+                curElm = codeElms[++currentElmNum];
+                moveArrow(curElm, 0, 1);
+            }
+        }
+
+
+
         // arrow position depends on curElm.left and inputLen/curStr.length
         moveArrow(curElm, inputLen, curStr.length);
+
+        deleteErrArrow();
 
         for(var curLen = 0; curLen < inputLen; curLen ++){
             if(inputStr[curLen] != curStr[curLen]) {
                 // error posion depends on curElm and curLen
-                errs += createErrArrow(curElm, curLen, curStr.length);
+                createErrArrow(curElm, curLen, curStr.length, inputStr[curLen]);
                 isRight = false;
             }
             else if (curLen == inputLen){
                 isRight = true;
-                deleteErrArrow(errs[errs.length - 1]);
+                
             }
         }
 
@@ -138,8 +189,10 @@
         }
 
         // This is a \n or tab
-        while(curElm.classList.contains('lf') || curElm.classList.contains('tab')){
-            console.log('lf or tab.');
+        while(curElm.classList.contains('lf') || curElm.classList.contains('tab') || curElm.classList.contains('comment')){
+            console.log('lf or tab or comment.');
+            // highlight current element
+            curElm.classList.remove("doNotHighlight");
             curElm = codeElms[++currentElmNum];
             moveArrow(curElm, 0, 1);
         }
@@ -186,18 +239,26 @@
             arrowDiv = document.getElementById('arrow');
         }
         arrowDiv.style.left = rect.left + (rect.right - rect.left) * (inputLen / totalLen) + 'px';
-        arrowDiv.style.top = rect.bottom + 'px';
+        arrowDiv.style.top = rect.bottom + window.scrollY + 'px';
         return arrowDiv.style.left
     };
-    var createErrArrow = function createErrArrow(elm, inputLen, totalLen){
+    var createErrArrow = function createErrArrow(elm, inputLen, totalLen, letter){
         var errArr = document.createElement('div');
         errArr.classList += 'errArrow';
+        errArr.innerHTML = letter;
         arrLeft = moveArrow(elm, inputLen, totalLen, errArr);
         document.getElementsByTagName('body')[0].appendChild(errArr);
         return errArr;
     };
-    var deleteErrArrow = function deleteErrArrow(errArr){
-        errArr.parentNode.removeChild(errArr);
+    var deleteErrArrow = function deleteErrArrow(){
+        errs = document.getElementsByClassName("errArrow");
+        var errNum = errs.length;
+        while(errs.length > 0){
+            errs[0].parentNode.removeChild(errs[0]);
+        }
+        
+        
+        
     };
     document.addEventListener("keypress",start);
     document.getElementById("hiddenInput").addEventListener("input",afterStart);

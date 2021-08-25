@@ -2,8 +2,6 @@
 
 A tiny web page for myself to practice code typing.
 
-Select different program files including different languages, then type them!
+Select different program files of different languages, then practice typing codes!
 
 Mainly used Python Django and JavaScript. 
-
-Still so many bugs. But at least I can use it now.

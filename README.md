@@ -18,13 +18,7 @@ Mainly used Python Django and JavaScript.
 
 ## Usage
 
-After download the codes, go to its root directory, then go to `/codeTyping`:
-
-```sh
-cd codeTyping
-```
-
-Then run below command to start the server:
+After download the codes, go to its root directory. Then run below command to start the server:
 
 ```sh
 python3 manage.py runserver 0.0.0.0:8000

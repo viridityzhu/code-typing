@@ -3,6 +3,7 @@ from django.contrib import messages
 import os
 import random
 
+BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
 def mainView(request):
     content = {}
@@ -18,8 +19,8 @@ def mainView(request):
                 content['sentence'] = 'Please select a type.'
             elif materialType != 'Randomly Mixed':
                 # any type
-                materials = os.listdir(
-                    '/static/typingMaterials/' + materialTypes[materialType])
+                materials = os.listdir( os.path.join(BASE_DIR,
+                    'static/typingMaterials/' + materialTypes[materialType]))
                 content['typeName'] = materialType
                 content['materials'] = materials
                 content['display1'] = "none"
@@ -29,11 +30,12 @@ def mainView(request):
                 pass
         elif 'material' in request.GET.keys():
             folderName = materialTypes[request.GET['typeName']]
-            fileName = random.choice(os.listdir(
-                'static/typingMaterials/' + folderName)) if request.GET['material'] == '*random' else request.GET['material']
+            fileName = random.choice(os.listdir( os.path.join(BASE_DIR,
+                'static/typingMaterials/' + folderName))) if request.GET['material'] == '*random' else request.GET['material']
             content['language'] = folderName.split('_')[0]
 
-            with open('static/typingMaterials/' + folderName + '/' + fileName) as f:
+            with open(os.path.join(BASE_DIR, 'static/typingMaterials/' +
+                folderName + '/' + fileName)) as f:
                 lines = f.readlines()
                 content['sentences'] = lines
                 content['letters'] = '\\\n'.join(

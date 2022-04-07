@@ -20,7 +20,7 @@
             <div id="choose">
                 <form method="get" name="chooseTypingMaterial">
                     <div id="chooseType" style="display:{{display1}}">
-                        <p>Choose Code Language:</p>
+                        <p>Select a Programming Language:</p>
                         <input type="text" name="choose" list="materialTypeList">
                         <datalist id="materialTypeList">
                             <option>C codes</option>
@@ -29,20 +29,21 @@
                             <!-- <option>English Articles</option> -->
                             <!-- <option>Randomly Mixed</option> -->
                         </datalist>
-                        <button type="submit">Start</button>
+                        <button type="submit">Select</button>
                     </div>
                 </form>
 
                 <form method="get" name="materialLst" id="materialLst">
                     <div id="chooseMaterial" style="display:{{display2}}">
-                        <p>Choose Materials from List:</p>
+                        <p>Then select a code snippet:</p>
                         <input type="text" name="material" id='materialInput' list="materialList">
                         <datalist id="materialList">
                            {% for i in materials %}
                                 <option>{{i}}</option>
                             {% endfor %} 
                         </datalist>
-                        <button type='submit' name="typeName" value="{{typeName}}" id='typeNameButton'>Select</button>
+                        <button type='submit' name="typeName"
+                            value="{{typeName}}" id='typeNameButton'>Start</button>
                     </div>
                 </form>
             </div>

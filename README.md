@@ -49,3 +49,14 @@ Two things to be noted:
 
 1. Every 3 months, I have to login into the pythonanywhere to extend my web app, otherwise it will be killed.
 2. The bug cost most of my time is that in the `view.py` I had used relative path to the static code files. However, I should use absolute path, with adding `BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))` ahead.
+
+## TODO
+
+Actually, after learned the MERN frame this semester, I am now aware of how naive this project is. However, I love Python, so it doesn't matter if i still regard Django as a hobby🤨. Who knows... I haven't even spent my time on that course project...
+
+Now that the live demo is achieved, I might think of polishing this little project a bit. 
+
+- [ ] Fix bugs. Though i've already forgotten what those bugs are...
+- [ ] Replace the stupid code snippets...
+- [ ] Add the feature to compute time cost and typing speed. Also, save typing records.
+- [ ] Explicitly support other kinds of typing materials, and also support uploading customize materials.

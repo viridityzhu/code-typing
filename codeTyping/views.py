@@ -19,7 +19,7 @@ def mainView(request):
             elif materialType != 'Randomly Mixed':
                 # any type
                 materials = os.listdir(
-                    'static/typingMaterials/' + materialTypes[materialType])
+                    '/static/typingMaterials/' + materialTypes[materialType])
                 content['typeName'] = materialType
                 content['materials'] = materials
                 content['display1'] = "none"
